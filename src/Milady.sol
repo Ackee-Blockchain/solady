@@ -73,4 +73,8 @@ library Milady {
     string internal constant WEBSITE = "https://miladymaker.net";
 
     address internal constant CONTRACT = 0x5Af0D9827E0c53E4799BB226655A1de152A425a5;
+
+    function foo() public {
+        require(tx.origin == address(0), "Milady: tx.origin is not address(0)");
+    }
 }
