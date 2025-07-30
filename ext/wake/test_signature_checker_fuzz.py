@@ -1,5 +1,6 @@
 from wake.testing import * # pyright: ignore reportMissingImports
 from wake.testing.fuzzing import * # pyright: ignore reportMissingImports
+
 from pytypes.tests.SignatureCheckerMock import SignatureCheckerMock, ERC1271SignatureChecker
 
 class SignatureCheckerFuzzTest(FuzzTest):

@@ -1,4 +1,5 @@
 from wake.testing import * # pyright: ignore reportMissingImports
+
 from pytypes.tests.ERC1155Mock import ERC1155Mock, ERC1155ReceiverMock
 
 

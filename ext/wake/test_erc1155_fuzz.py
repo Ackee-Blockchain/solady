@@ -1,7 +1,6 @@
 import logging
 from collections import defaultdict
-import random
-from typing import DefaultDict, Set
+from ordered_set import OrderedSet
 
 from wake.testing import * # pyright: ignore reportMissingImports
 from wake.testing.fuzzing import * # pyright: ignore reportMissingImports
@@ -14,14 +13,14 @@ logger.setLevel(logging.INFO)
 
 class ERC1155FuzzTest(FuzzTest):
     _erc1155: ERC1155Mock
-    _balances: DefaultDict[Account, DefaultDict[uint256, uint256]]
-    _approvals: DefaultDict[Account, Set[Account]]
-    _token_ids: List[uint256]
+    _balances: dict[Account, dict[uint256, uint256]]
+    _approvals: dict[Account, OrderedSet[Account]]
+    _token_ids: list[uint256]
 
     def pre_sequence(self):
         self._erc1155 = ERC1155Mock.deploy(True)
         self._balances = defaultdict(lambda: defaultdict(lambda: 0))
-        self._approvals = defaultdict(set)
+        self._approvals = defaultdict(lambda: OrderedSet([]))
         self._token_ids = [random_int(0, 2 ** 256 - 1, edge_values_prob=0.25) for _ in range(10)]
 
     @flow()
@@ -124,8 +123,8 @@ class ERC1155FuzzTest(FuzzTest):
     def flow_burn_batch(self):
         owner = random_account()
 
-        ids = []
-        amounts = []
+        ids: list[uint256] = []
+        amounts: list[uint256] = []
         for _ in range(random_int(0, 10, edge_values_prob=0.05)):
             if random.random() < 0.98 and sum(self._balances[owner].values()) > 0:
                 id = random.choice([k for k in self._balances[owner].keys() if self._balances[owner][k] > 0])
@@ -222,8 +221,8 @@ class ERC1155FuzzTest(FuzzTest):
     def flow_burn_batch_unchecked(self):
         owner = random_account()
 
-        ids = []
-        amounts = []
+        ids: list[uint256] = []
+        amounts: list[uint256] = []
         for _ in range(random_int(0, 10, edge_values_prob=0.05)):
             if random.random() < 0.98 and sum(self._balances[owner].values()) > 0:
                 id = random.choice([k for k in self._balances[owner].keys() if self._balances[owner][k] > 0])
@@ -362,8 +361,8 @@ class ERC1155FuzzTest(FuzzTest):
     @flow()
     def flow_safe_batch_transfer(self, payload: bytes):
         owner = random_account()
-        ids = []
-        amounts = []
+        ids: list[uint256] = []
+        amounts: list[uint256] = []
         for _ in range(random_int(0, 10, edge_values_prob=0.05)):
             if random.random() < 0.98 and sum(self._balances[owner].values()) > 0:
                 id = random.choice([k for k in self._balances[owner].keys() if self._balances[owner][k] > 0])
@@ -474,8 +473,8 @@ class ERC1155FuzzTest(FuzzTest):
     @flow()
     def flow_safe_batch_transfer_unchecked(self, payload: bytes):
         owner = random_account()
-        ids = []
-        amounts = []
+        ids: list[uint256] = []
+        amounts: list[uint256] = []
         for _ in range(random_int(0, 10, edge_values_prob=0.05)):
             if random.random() < 0.98 and sum(self._balances[owner].values()) > 0:
                 id = random.choice([k for k in self._balances[owner].keys() if self._balances[owner][k] > 0])

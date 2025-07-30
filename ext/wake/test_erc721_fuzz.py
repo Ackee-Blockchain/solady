@@ -1,5 +1,3 @@
-import random
-
 from wake.testing.fuzzing import * # pyright: ignore reportMissingImports
 from wake.testing import * # pyright: ignore reportMissingImports
 
@@ -91,10 +89,10 @@ class ERC721FuzzTest(FuzzTest):
     _erc721: ERC721Mock
     _py_erc721: ERC721
     _id_counter: int
-    _ids: List[int]
+    _ids: list[int]
     # We dont want to use random addresses in flows
     # We want more interaction by addresses that are already managing something
-    _addresses: List[Address]
+    _addresses: list[Address]
 
     def pre_sequence(self) -> None:
         self._erc721 = ERC721Mock.deploy()
