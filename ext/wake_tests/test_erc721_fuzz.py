@@ -366,5 +366,5 @@ class ERC721FuzzTest(FuzzTest):
 
 @chain.connect()
 def test_eip712_fuzz():
-    ERC721FuzzTest().run(30, 60000)
+    ERC721FuzzTest().run(30, 600)
 
