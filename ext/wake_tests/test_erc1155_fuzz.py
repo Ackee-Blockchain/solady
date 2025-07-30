@@ -58,7 +58,7 @@ class ERC1155FuzzTest(FuzzTest):
         with may_revert() as e:
             tx = self._erc1155.batchMint(recipient, ids, amounts, payload, from_=minter)
 
-        if e.value == ERC1155Mock.AccountBalanceOverflow():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector):
             amounts_by_ids = defaultdict(int)
             for id, amount in zip(ids, amounts):
                 amounts_by_ids[id] += amount
@@ -98,11 +98,11 @@ class ERC1155FuzzTest(FuzzTest):
         with may_revert() as e:
             tx = self._erc1155.burn(owner, id, amount, from_=operator)
 
-        if e.value == ERC1155Mock.InsufficientBalance():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector):
             assert self._balances[owner][id] - amount < 0
             return "After Burn Insufficient Balance"
 
-        if e.value == ERC1155Mock.NotOwnerNorApproved():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector):
             assert operator != owner and operator not in self._approvals[owner]
             return "After Burn Not Owner Nor Approved"
 
@@ -149,22 +149,22 @@ class ERC1155FuzzTest(FuzzTest):
         with may_revert() as e:
             tx = self._erc1155.batchBurn(owner, ids, amounts, from_=operator)
 
-        if e.value == ERC1155Mock.InsufficientBalance():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector):
             amounts_by_ids = defaultdict(int)
             for id, amount in zip(ids, amounts):
                 amounts_by_ids[id] += amount
             assert any(self._balances[owner][id] - amount < 0 for id, amount in amounts_by_ids.items())
             return "After Batch Burn Insufficient Balance"
-        if e.value == ERC1155Mock.NotOwnerNorApproved():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector):
             assert operator != owner and operator not in self._approvals[owner]
             return "Not Owner Of Token Or Not Approved"
 
 
         assert e.value is None
         assert tx.events == [
-            ERC1155Mock.BeforeTokenTransfer(owner.address, Address.ZERO, ids, amounts, bytes()),
+            ERC1155Mock.BeforeTokenTransfer(owner.address, Address.ZERO, ids, amounts, bytearray()),
             ERC1155Mock.TransferBatch(operator.address, owner.address, Address.ZERO, ids, amounts),
-            ERC1155Mock.AfterTokenTransfer(owner.address, Address.ZERO, ids, amounts, bytes()),
+            ERC1155Mock.AfterTokenTransfer(owner.address, Address.ZERO, ids, amounts, bytearray()),
         ]
         for id, amount in zip(ids, amounts):
             assert self._balances[owner][id] - amount >= 0
@@ -197,18 +197,18 @@ class ERC1155FuzzTest(FuzzTest):
         with may_revert() as e:
             tx = self._erc1155.burnUnchecked(operator, owner, id, amount, from_=executor)
 
-        if e.value == ERC1155Mock.InsufficientBalance():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector):
             assert self._balances[owner][id] - amount < 0
             return "After Burn Insufficient Balance"
-        if e.value == ERC1155Mock.NotOwnerNorApproved():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector):
             assert operator != owner and operator != Account(0) and operator not in self._approvals[owner]
             return "Not Owner Of Token Or Not Approved"
 
         assert e.value is None
         assert tx.events == [
-            ERC1155Mock.BeforeTokenTransfer(owner.address, Address.ZERO, [id], [amount], bytes()),
+            ERC1155Mock.BeforeTokenTransfer(owner.address, Address.ZERO, [id], [amount], bytearray()),
             ERC1155Mock.TransferSingle(executor.address, owner.address, Address.ZERO, id, amount),
-            ERC1155Mock.AfterTokenTransfer(owner.address, Address.ZERO, [id], [amount], bytes()),
+            ERC1155Mock.AfterTokenTransfer(owner.address, Address.ZERO, [id], [amount], bytearray()),
         ]
         assert self._balances[owner][id] - amount >= 0
         self._balances[owner][id] -= amount
@@ -248,21 +248,21 @@ class ERC1155FuzzTest(FuzzTest):
         with may_revert() as e:
             tx = self._erc1155.batchBurnUnchecked(operator, owner, ids, amounts, from_=executor)
 
-        if e.value == ERC1155Mock.InsufficientBalance():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector):
             amounts_by_ids = defaultdict(int)
             for id, amount in zip(ids, amounts):
                 amounts_by_ids[id] += amount
             assert any(self._balances[owner][id] - amount < 0 for id, amount in amounts_by_ids.items())
             return "After Batch Burn Insufficient Balance"
-        if e.value == ERC1155Mock.NotOwnerNorApproved():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector):
             assert operator != owner and operator != Account(0) and operator not in self._approvals[owner]
             return "Not Owner Of Token Or Not Approved"
 
         assert e.value is None
         assert tx.events == [
-            ERC1155Mock.BeforeTokenTransfer(owner.address, Address.ZERO, ids, amounts, bytes()),
+            ERC1155Mock.BeforeTokenTransfer(owner.address, Address.ZERO, ids, amounts, bytearray()),
             ERC1155Mock.TransferBatch(executor.address, owner.address, Address.ZERO, ids, amounts),
-            ERC1155Mock.AfterTokenTransfer(owner.address, Address.ZERO, ids, amounts, bytes()),
+            ERC1155Mock.AfterTokenTransfer(owner.address, Address.ZERO, ids, amounts, bytearray()),
         ]
         for id, amount in zip(ids, amounts):
             assert self._balances[owner][id] - amount >= 0
@@ -333,13 +333,13 @@ class ERC1155FuzzTest(FuzzTest):
         with may_revert() as e:
             tx = self._erc1155.safeTransferFrom(owner, recipient, id, amount, payload, from_=operator)
 
-        if e.value == ERC1155Mock.InsufficientBalance():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector):
             assert self._balances[owner][id] - amount < 0
             return "After Safe Transfer Insufficient Balance"
-        if e.value == ERC1155Mock.AccountBalanceOverflow():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector):
             assert self._balances[recipient][id] + amount > 2 ** 256 - 1
             return "After Safe Transfer Account Balance Overflow"
-        if e.value == ERC1155Mock.NotOwnerNorApproved():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector):
             assert operator != owner and operator not in self._approvals[owner]
             return "Not Owner Of Token Or Not Approved"
 
@@ -387,19 +387,19 @@ class ERC1155FuzzTest(FuzzTest):
         with may_revert() as e:
             tx = self._erc1155.safeBatchTransferFrom(owner, owner, ids, amounts, payload, from_=operator)
 
-        if e.value == ERC1155Mock.InsufficientBalance():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector):
             amounts_by_ids = defaultdict(int)
             for id, amount in zip(ids, amounts):
                 amounts_by_ids[id] += amount
             assert any(self._balances[owner][id] - amount < 0 for id, amount in amounts_by_ids.items())
             return "After Safe Batch Transfer Insufficient Balance"
-        if e.value == ERC1155Mock.AccountBalanceOverflow():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector):
             amounts_by_ids = defaultdict(int)
             for id, amount in zip(ids, amounts):
                 amounts_by_ids[id] += amount
             assert any(self._balances[owner][id] + amount > 2 ** 256 - 1 for id, amount in amounts_by_ids.items())
             return "After Safe Batch Transfer Account Balance Overflow"
-        if e.value == ERC1155Mock.NotOwnerNorApproved():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector):
             assert operator != owner and operator not in self._approvals[owner]
             return "Not Owner Of Token Or Not Approved"
 
@@ -443,22 +443,22 @@ class ERC1155FuzzTest(FuzzTest):
         with may_revert() as e:
             tx = self._erc1155.safeTransferUnchecked(operator, owner, recipient, id, amount, payload, from_=executor)
 
-        if e.value == ERC1155Mock.InsufficientBalance():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector):
             assert self._balances[owner][id] - amount < 0
             return "After Safe Transfer Insufficient Balance"
-        if e.value == ERC1155Mock.AccountBalanceOverflow():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector):
             assert self._balances[recipient][id] + amount > 2 ** 256 - 1
             return "After Safe Transfer Account Balance Overflow"
-        if e.value == ERC1155Mock.NotOwnerNorApproved():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector):
             assert operator != owner and operator != Account(0) and operator not in self._approvals[owner]
             return "Not Owner Of Token Or Not Approved"
 
 
         assert e.value is None
         assert tx.events == [
-            ERC1155Mock.BeforeTokenTransfer(owner.address, recipient.address, [id], [amount], payload),
+            ERC1155Mock.BeforeTokenTransfer(owner.address, recipient.address, [id], [amount], bytearray(payload)),
             ERC1155Mock.TransferSingle(executor.address, owner.address, recipient.address, id, amount),
-            ERC1155Mock.AfterTokenTransfer(owner.address, recipient.address, [id], [amount], payload),
+            ERC1155Mock.AfterTokenTransfer(owner.address, recipient.address, [id], [amount], bytearray(payload)),
         ]
         assert self._balances[owner][id] - amount >= 0
         self._balances[owner][id] -= amount
@@ -501,27 +501,27 @@ class ERC1155FuzzTest(FuzzTest):
             tx = self._erc1155.safeBatchTransferUnchecked(operator, owner, owner, ids, amounts, payload, from_=executor)
 
 
-        if e.value == ERC1155Mock.InsufficientBalance():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector):
             amounts_by_ids = defaultdict(int)
             for id, amount in zip(ids, amounts):
                 amounts_by_ids[id] += amount
             assert any(self._balances[owner][id] - amount < 0 for id, amount in amounts_by_ids.items())
             return "After Safe Batch Transfer Insufficient Balance"
-        if e.value == ERC1155Mock.AccountBalanceOverflow():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector):
             amounts_by_ids = defaultdict(int)
             for id, amount in zip(ids, amounts):
                 amounts_by_ids[id] += amount
             assert any(self._balances[owner][id] + amount > 2 ** 256 - 1 for id, amount in amounts_by_ids.items())
             return "After Safe Batch Transfer Account Balance Overflow"
-        if e.value == ERC1155Mock.NotOwnerNorApproved():
+        if e.value == UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector):
             assert operator != owner and operator != Account(0) and operator not in self._approvals[owner]
             return "Not Owner Of Token Or Not Approved"
 
         assert e.value is None
         assert tx.events == [
-            ERC1155Mock.BeforeTokenTransfer(owner.address, owner.address, ids, amounts, payload),
+            ERC1155Mock.BeforeTokenTransfer(owner.address, owner.address, ids, amounts, bytearray(payload)),
             ERC1155Mock.TransferBatch(executor.address, owner.address, owner.address, ids, amounts),
-            ERC1155Mock.AfterTokenTransfer(owner.address, owner.address, ids, amounts, payload),
+            ERC1155Mock.AfterTokenTransfer(owner.address, owner.address, ids, amounts, bytearray(payload)),
         ]
         for id, amount in zip(ids, amounts):
             assert self._balances[owner][id] - amount >= 0

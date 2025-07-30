@@ -182,45 +182,45 @@ def test_erc1155_mint_burn():
     assert erc1155.balanceOf(b, 0) == 50
 
     # b is not owner nor approved
-    with must_revert(ERC1155Mock.NotOwnerNorApproved()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector)):
         erc1155.burn(b, 0, 50, from_=a)
 
     # insufficient balance
-    with must_revert(ERC1155Mock.InsufficientBalance()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector)):
         erc1155.burn(b, 0, 51, from_=b)
 
     erc1155.burn(b, 0, 50, from_=b)
     assert erc1155.balanceOf(b, 0) == 0
 
     # mint to zero address
-    with must_revert(ERC1155Mock.TransferToZeroAddress()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToZeroAddress.selector)):
         erc1155.mint(Address.ZERO, 0, 100, b"", from_=a)
 
     # balance overflow
     erc1155.mint(b, 0, 2 ** 256 - 1, b"", from_=a)
     assert erc1155.balanceOf(b, 0) == 2 ** 256 - 1
-    with must_revert(ERC1155Mock.AccountBalanceOverflow()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector)):
         erc1155.mint(b, 0, 1, b"", from_=a)
     erc1155.burn(b, 0, 2 ** 256 - 1, from_=b)
 
     # ids and amounts length mismatch
-    with must_revert(ERC1155Mock.ArrayLengthsMismatch()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.ArrayLengthsMismatch.selector)):
         erc1155.batchMint(b, [0, 1], [100], b"", from_=a)
 
     # ids and amounts length mismatch
-    with must_revert(ERC1155Mock.ArrayLengthsMismatch()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.ArrayLengthsMismatch.selector)):
         erc1155.batchBurn(b, [0, 1], [100], from_=a)
 
     # mint to zero address
-    with must_revert(ERC1155Mock.TransferToZeroAddress()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToZeroAddress.selector)):
         erc1155.batchMint(Address.ZERO, [0, 1], [100, 200], b"", from_=a)
 
     # balance overflow
-    with must_revert(ERC1155Mock.AccountBalanceOverflow()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector)):
         erc1155.batchMint(b, [0, 1, 0], [2 ** 256 - 1, 1, 1], b"", from_=a)
 
     # not owner nor approved
-    with must_revert(ERC1155Mock.NotOwnerNorApproved()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector)):
         erc1155.batchBurn(b, [0, 1, 0], [1, 1, 1], from_=a)
 
     # insufficient balance
@@ -228,7 +228,7 @@ def test_erc1155_mint_burn():
     erc1155.mint(b, 1, 1, b"", from_=a)
     assert erc1155.balanceOf(b, 0) == 100
     assert erc1155.balanceOf(b, 1) == 1
-    with must_revert(ERC1155Mock.InsufficientBalance()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector)):
         erc1155.batchBurn(b, [0, 1, 0], [70, 1, 31], from_=b)
     erc1155.burn(b, 0, 100, from_=b)
     erc1155.burn(b, 1, 1, from_=b)
@@ -258,19 +258,19 @@ def test_erc1155_transfers():
     assert erc1155.balanceOfBatch([a, a, b, a], [0, 1, 0, 2]) == [50, 100, 50, 0]
 
     # owners and ids length mismatch
-    with must_revert(ERC1155Mock.ArrayLengthsMismatch()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.ArrayLengthsMismatch.selector)):
         assert erc1155.balanceOfBatch([a, a, b], [0, 1, 0, 2]) == [50, 100, 50, 0]
 
     # not owner nor approved
-    with must_revert(ERC1155Mock.NotOwnerNorApproved()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector)):
         erc1155.safeTransferFrom(a, b, 0, 50, b"", from_=b)
 
     # insufficient balance
-    with must_revert(ERC1155Mock.InsufficientBalance()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector)):
         erc1155.safeTransferFrom(a, b, 0, 51, b"", from_=a)
 
     # transfer to zero address
-    with must_revert(ERC1155Mock.TransferToZeroAddress()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToZeroAddress.selector)):
         erc1155.safeTransferFrom(a, Address.ZERO, 0, 50, b"", from_=a)
 
     # transfer to self
@@ -279,13 +279,13 @@ def test_erc1155_transfers():
 
     # balance overflow
     erc1155.mint(a, 0, 2 ** 256 - 1 - 50, b"", from_=a)
-    with must_revert(ERC1155Mock.AccountBalanceOverflow()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector)):
         erc1155.safeTransferFrom(a, b, 0, 2 ** 256 - 1 - 49, b"", from_=a)
 
     # transfer to non-erc1155 receiver
-    with must_revert(ERC1155Mock.TransferToNonERC1155ReceiverImplementer()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToNonERC1155ReceiverImplementer.selector)):
         erc1155.safeTransferFrom(a, erc1155, 0, 50, b"", from_=a)
-    with must_revert(ERC1155Mock.TransferToNonERC1155ReceiverImplementer()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToNonERC1155ReceiverImplementer.selector)):
         erc1155.safeBatchTransferFrom(a, erc1155, [0], [50], b"", from_=a)
 
     # clear balances
@@ -298,20 +298,20 @@ def test_erc1155_transfers():
     erc1155.safeBatchTransferFrom(a, b, [0, 1], [70, 30], b"", from_=a)
     assert erc1155.balanceOfBatch([a, a, b, b], [0, 1, 0, 1]) == [30, 70, 70, 30]
 
-    with must_revert(ERC1155Mock.ArrayLengthsMismatch()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.ArrayLengthsMismatch.selector)):
         erc1155.safeBatchTransferFrom(a, b, [0, 1], [30], b"", from_=a)
 
-    with must_revert(ERC1155Mock.TransferToZeroAddress()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToZeroAddress.selector)):
         erc1155.safeBatchTransferFrom(a, Address.ZERO, [0, 1], [30, 30], b"", from_=a)
 
-    with must_revert(ERC1155Mock.NotOwnerNorApproved()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector)):
         erc1155.safeBatchTransferFrom(a, b, [0, 1], [30, 30], b"", from_=c)
 
-    with must_revert(ERC1155Mock.InsufficientBalance()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector)):
         erc1155.safeBatchTransferFrom(a, b, [0, 1], [31, 30], b"", from_=a)
 
     erc1155.mint(a, 0, 2 ** 256 - 1 - 30, b"", from_=a)
-    with must_revert(ERC1155Mock.AccountBalanceOverflow()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector)):
         erc1155.safeBatchTransferFrom(a, b, [0, 1], [2 ** 256 - 1 - 29, 30], b"", from_=a)
 
 
@@ -384,61 +384,61 @@ def test_erc1155_unchecked():
     erc1155.mint(a, 0, 100, b"", from_=c)
     assert erc1155.balanceOf(a, 0) == 100
 
-    with must_revert(ERC1155Mock.NotOwnerNorApproved()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector)):
         erc1155.safeTransferUnchecked(b, a, b, 0, 100, b"", from_=c)
 
-    with must_revert(ERC1155Mock.NotOwnerNorApproved()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.NotOwnerNorApproved.selector)):
         erc1155.safeBatchTransferUnchecked(b, a, b, [0], [100], b"", from_=c)
 
-    with must_revert(ERC1155Mock.TransferToZeroAddress()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToZeroAddress.selector)):
         erc1155.safeTransferUnchecked(Address.ZERO, a, Address.ZERO, 0, 100, b"", from_=c)
 
-    with must_revert(ERC1155Mock.TransferToZeroAddress()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToZeroAddress.selector)):
         erc1155.safeTransferUnchecked(a, a, Address.ZERO, 0, 100, b"", from_=c)
 
-    with must_revert(ERC1155Mock.TransferToZeroAddress()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToZeroAddress.selector)):
         erc1155.safeBatchTransferUnchecked(Address.ZERO, a, Address.ZERO, [0], [100], b"", from_=c)
 
-    with must_revert(ERC1155Mock.TransferToZeroAddress()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToZeroAddress.selector)):
         erc1155.safeBatchTransferUnchecked(a, a, Address.ZERO, [0], [100], b"", from_=c)
 
-    with must_revert(ERC1155Mock.InsufficientBalance()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector)):
         erc1155.safeTransferUnchecked(Address.ZERO, a, b, 0, 101, b"", from_=c)
 
-    with must_revert(ERC1155Mock.InsufficientBalance()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector)):
         erc1155.safeTransferUnchecked(a, a, b, 0, 101, b"", from_=c)
 
-    with must_revert(ERC1155Mock.InsufficientBalance()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector)):
         erc1155.safeBatchTransferUnchecked(Address.ZERO, a, b, [0], [101], b"", from_=c)
 
-    with must_revert(ERC1155Mock.InsufficientBalance()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.InsufficientBalance.selector)):
         erc1155.safeBatchTransferUnchecked(a, a, b, [0], [101], b"", from_=c)
 
     erc1155.mint(b, 0, 2 ** 256 - 10, b"", from_=c)
 
-    with must_revert(ERC1155Mock.AccountBalanceOverflow()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector)):
         erc1155.safeTransferUnchecked(Address.ZERO, a, b, 0, 100, b"", from_=c)
 
-    with must_revert(ERC1155Mock.AccountBalanceOverflow()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector)):
         erc1155.safeTransferUnchecked(a, a, b, 0, 100, b"", from_=c)
 
-    with must_revert(ERC1155Mock.AccountBalanceOverflow()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector)):
         erc1155.safeBatchTransferUnchecked(Address.ZERO, a, b, [0, 0], [9, 21], b"", from_=c)
 
-    with must_revert(ERC1155Mock.AccountBalanceOverflow()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.AccountBalanceOverflow.selector)):
         erc1155.safeBatchTransferUnchecked(a, a, b, [0, 0], [9, 21], b"", from_=c)
 
-    with must_revert(ERC1155Mock.ArrayLengthsMismatch()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.ArrayLengthsMismatch.selector)):
         erc1155.safeBatchTransferUnchecked(Address.ZERO, a, b, [0], [100, 100], b"", from_=c)
 
-    with must_revert(ERC1155Mock.TransferToNonERC1155ReceiverImplementer()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToNonERC1155ReceiverImplementer.selector)):
         erc1155.safeTransferUnchecked(Address.ZERO, a, erc1155, 0, 100, b"", from_=c)
 
-    with must_revert(ERC1155Mock.TransferToNonERC1155ReceiverImplementer()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToNonERC1155ReceiverImplementer.selector)):
         erc1155.safeTransferUnchecked(a, a, erc1155, 0, 100, b"", from_=c)
 
-    with must_revert(ERC1155Mock.TransferToNonERC1155ReceiverImplementer()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToNonERC1155ReceiverImplementer.selector)):
         erc1155.safeBatchTransferUnchecked(Address.ZERO, a, erc1155, [0], [100], b"", from_=c)
 
-    with must_revert(ERC1155Mock.TransferToNonERC1155ReceiverImplementer()):
+    with must_revert(UnknownTransactionRevertedError(ERC1155Mock.TransferToNonERC1155ReceiverImplementer.selector)):
         erc1155.safeBatchTransferUnchecked(a, a, erc1155, [0], [100], b"", from_=c)
