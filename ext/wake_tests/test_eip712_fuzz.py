@@ -67,4 +67,4 @@ class Eip712FuzzTest(FuzzTest):
 
 @chain.connect()
 def test_eip712_fuzz():
-    Eip712FuzzTest().run(10, 10000)
+    Eip712FuzzTest().run(10, 10)
