@@ -4,7 +4,8 @@ from ordered_set import OrderedSet
 
 from wake.testing import * # pyright: ignore reportMissingImports
 from wake.testing.fuzzing import * # pyright: ignore reportMissingImports
-from pytypes.tests.ERC1155Mock import ERC1155Mock
+
+from pytypes.ext.wake_tests.helpers.ERC1155Mock import ERC1155Mock
 
 
 logger = logging.getLogger(__name__)

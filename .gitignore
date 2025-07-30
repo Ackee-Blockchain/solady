@@ -21,7 +21,7 @@ out/
 # Ignore all jetbrain settings
 .idea/
 
-# Ignore all notes 
+# Ignore all notes
 notes/
 
 # Ignore flattened files
@@ -32,7 +32,7 @@ broadcast
 # Coverage
 lcov.info
 
-# Woke testing
+# Wake testing
 .wake
 pytypes
 __pycache__/

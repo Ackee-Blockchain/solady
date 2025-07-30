@@ -1,7 +1,7 @@
 from wake.testing import * # pyright: ignore reportMissingImports
 from wake.testing.fuzzing import random_bytes, random_int
 
-from pytypes.tests.MerkleProofMock import MerkleProofMock
+from pytypes.ext.wake_tests.helpers.MerkleProofMock import MerkleProofMock
 
 from .utils import MerkleTree
 

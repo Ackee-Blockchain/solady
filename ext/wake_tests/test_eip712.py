@@ -1,8 +1,10 @@
 from dataclasses import dataclass, field
 
 from wake.testing import *  # pyright: ignore reportMissingImports
+
 from pytypes.src.utils.ERC1967Factory import ERC1967Factory
-from pytypes.tests.EIP712Mock import EIP712Mock
+
+from pytypes.ext.wake_tests.helpers.EIP712Mock import EIP712Mock
 
 
 @dataclass

@@ -1,7 +1,7 @@
 from wake.testing.fuzzing import * # pyright: ignore reportMissingImports
 from wake.testing import * # pyright: ignore reportMissingImports
 
-from pytypes.tests.ERC721Mock import ERC721Mock
+from pytypes.ext.wake_tests.helpers.ERC721Mock import ERC721Mock
 
 
 ###################################################################

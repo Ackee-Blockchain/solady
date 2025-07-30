@@ -1,21 +1,21 @@
 from wake.testing import * # pyright: ignore reportMissingImports
 
-from pytypes.tests.ERC20Mock import ERC20Mock
-from pytypes.tests.NoETHMock import NoETHMock
-from pytypes.tests.weird.Approval import ApprovalRaceToken
-from pytypes.tests.weird.ApprovalToZero import ApprovalToZeroToken
-from pytypes.tests.weird.BlockList import BlockableToken
-from pytypes.tests.weird.HighDecimals import HighDecimalToken
-from pytypes.tests.weird.Bytes32Metadata import ERC20 as Bytes32MetadataToken
-from pytypes.tests.weird.MissingReturns import MissingReturnToken
-from pytypes.tests.weird.NoRevert import NoRevertToken
-from pytypes.tests.weird.Pausable import PausableToken
-from pytypes.tests.weird.Proxied import ProxiedToken, TokenProxy
-from pytypes.tests.weird.Reentrant import ReentrantToken
-from pytypes.tests.weird.ReturnsFalse import ReturnsFalseToken
-from pytypes.tests.weird.TransferFee import TransferFeeToken
-from pytypes.tests.weird.Uint96 import Uint96ERC20
-from pytypes.tests.weird.Upgradable import Proxy as UpgradableToken
+from pytypes.ext.wake_tests.helpers.ERC20Mock import ERC20Mock
+from pytypes.ext.wake_tests.helpers.NoETHMock import NoETHMock
+from pytypes.ext.wake_tests.weird.Approval import ApprovalRaceToken
+from pytypes.ext.wake_tests.weird.ApprovalToZero import ApprovalToZeroToken
+from pytypes.ext.wake_tests.weird.BlockList import BlockableToken
+from pytypes.ext.wake_tests.weird.HighDecimals import HighDecimalToken
+from pytypes.ext.wake_tests.weird.Bytes32Metadata import ERC20 as Bytes32MetadataToken
+from pytypes.ext.wake_tests.weird.MissingReturns import MissingReturnToken
+from pytypes.ext.wake_tests.weird.NoRevert import NoRevertToken
+from pytypes.ext.wake_tests.weird.Pausable import PausableToken
+from pytypes.ext.wake_tests.weird.Proxied import ProxiedToken, TokenProxy
+from pytypes.ext.wake_tests.weird.Reentrant import ReentrantToken
+from pytypes.ext.wake_tests.weird.ReturnsFalse import ReturnsFalseToken
+from pytypes.ext.wake_tests.weird.TransferFee import TransferFeeToken
+from pytypes.ext.wake_tests.weird.Uint96 import Uint96ERC20
+from pytypes.ext.wake_tests.weird.Upgradable import Proxy as UpgradableToken
 
 from pytypes.src.utils.SafeTransferLib import SafeTransferLib
 

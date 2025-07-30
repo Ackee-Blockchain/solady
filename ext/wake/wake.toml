@@ -1,7 +1,0 @@
-[detectors]
-exclude = ["unused-contract", "unused-import"]
-ignore_paths = ["venv", ".venv", "test"]
-exclude_paths = ["node_modules", "lib", "script"]
-
-[testing]
-cmd = "revm"
