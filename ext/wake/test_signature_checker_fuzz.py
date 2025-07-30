@@ -1,5 +1,5 @@
-from wake.testing import *
-from wake.testing.fuzzing import *
+from wake.testing import * # pyright: ignore reportMissingImports
+from wake.testing.fuzzing import * # pyright: ignore reportMissingImports
 from pytypes.tests.SignatureCheckerMock import SignatureCheckerMock, ERC1271SignatureChecker
 
 class SignatureCheckerFuzzTest(FuzzTest):
@@ -97,7 +97,7 @@ class SignatureCheckerFuzzTest(FuzzTest):
         signer = self._signer.address
         data = random_bytes(0, 1000)
         hash = bytearray(keccak256(data))
-        signature = bytearray(self._signer.sign_hash(hash))
+        signature = bytearray(self._signer.sign_hash(bytes(hash)))
         original_v = None
 
         x = random_int(0, 2)
@@ -127,9 +127,12 @@ class SignatureCheckerFuzzTest(FuzzTest):
         else:
             assert False
 
-        r = signature[:32]
-        s = signature[32:64]
-        v = signature[64]
+        r = bytes(signature[:32])
+        s = bytes(signature[32:64])
+        v = int.from_bytes(bytes(signature[64]), "big")
+
+        byte_hash = bytes(hash)
+        byte_signature = bytes(signature)
 
         if original_v is None:
             # v was not modified
@@ -138,40 +141,40 @@ class SignatureCheckerFuzzTest(FuzzTest):
             # v was modified
             vs = s if original_v == 28 else (s[0] | 0x80).to_bytes(1, "big") + s[1:]
 
-        assert not self._signature_checker.isValidSignatureNow(signer, hash, signature)
+        assert not self._signature_checker.isValidSignatureNow(signer, byte_hash, byte_signature)
         assert not self._signature_checker.isValidSignatureNow_(
             signer,
-            hash,
+            byte_hash,
             r,
             vs,
         )
-        assert not self._signature_checker.isValidSignatureNow__(signer, hash, v, r, s)
-        assert not self._signature_checker.isValidSignatureNowCalldata(signer, hash, signature)
+        assert not self._signature_checker.isValidSignatureNow__(signer, byte_hash, v, r, s)
+        assert not self._signature_checker.isValidSignatureNowCalldata(signer, byte_hash, byte_signature)
 
         # erc1271
-        assert not self._signature_checker.isValidSignatureNow(self._erc1271_signature_checker, hash, signature, from_=signer)
+        assert not self._signature_checker.isValidSignatureNow(self._erc1271_signature_checker, byte_hash, byte_signature, from_=signer)
         assert not self._signature_checker.isValidSignatureNow_(
             self._erc1271_signature_checker,
-            hash,
+            byte_hash,
             r,
             vs,
             from_=signer,
         )
-        assert not self._signature_checker.isValidSignatureNow__(self._erc1271_signature_checker, hash, v, r, s, from_=signer)
-        assert not self._signature_checker.isValidSignatureNowCalldata(self._erc1271_signature_checker, hash, signature, from_=signer)
+        assert not self._signature_checker.isValidSignatureNow__(self._erc1271_signature_checker, byte_hash, v, r, s, from_=signer)
+        assert not self._signature_checker.isValidSignatureNowCalldata(self._erc1271_signature_checker, byte_hash, byte_signature, from_=signer)
 
-        assert not self._signature_checker.isValidERC1271SignatureNow(self._erc1271_signature_checker, hash, signature, from_=signer)
+        assert not self._signature_checker.isValidERC1271SignatureNow(self._erc1271_signature_checker, byte_hash, byte_signature, from_=signer)
         assert not self._signature_checker.isValidERC1271SignatureNow_(
             self._erc1271_signature_checker,
-            hash,
+            byte_hash,
             r,
             vs,
             from_=signer,
         )
-        assert not self._signature_checker.isValidERC1271SignatureNow__(self._erc1271_signature_checker, hash, v, r, s, from_=signer)
-        assert not self._signature_checker.isValidERC1271SignatureNowCalldata(self._erc1271_signature_checker, hash, signature, from_=signer)
+        assert not self._signature_checker.isValidERC1271SignatureNow__(self._erc1271_signature_checker, byte_hash, v, r, s, from_=signer)
+        assert not self._signature_checker.isValidERC1271SignatureNowCalldata(self._erc1271_signature_checker, byte_hash, byte_signature, from_=signer)
 
 
-@default_chain.connect()
+@chain.connect()
 def test_signature_checker():
     SignatureCheckerFuzzTest().run(10, 20)

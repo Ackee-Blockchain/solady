@@ -1,4 +1,4 @@
-from wake.testing import *
+from wake.testing import * # pyright: ignore reportMissingImports
 
 from pytypes.tests.ERC20Mock import ERC20Mock
 from pytypes.tests.NoETHMock import NoETHMock
@@ -20,11 +20,11 @@ from pytypes.tests.weird.Upgradable import Proxy as UpgradableToken
 from pytypes.src.utils.SafeTransferLib import SafeTransferLib
 
 
-@default_chain.connect()
+@chain.connect()
 def test_erc20():
-    milady = default_chain.accounts[0]
-    accountoor = default_chain.accounts[1]
-    default_chain.set_default_accounts(milady)
+    milady = chain.accounts[0]
+    accountoor = chain.accounts[1]
+    chain.set_default_accounts(milady)
 
     tokenoor = ERC20Mock.deploy("Mockoor", "MOCK", 18)
 
@@ -40,11 +40,11 @@ def test_erc20():
     assert tokenoor.balanceOf(milady) == 0
     assert tokenoor.balanceOf(accountoor) == 2**30
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_eth():
-    milady = default_chain.accounts[0]
-    accountoor = default_chain.accounts[1]
-    default_chain.set_default_accounts(milady)
+    milady = chain.accounts[0]
+    accountoor = chain.accounts[1]
+    chain.set_default_accounts(milady)
 
     SafeTransferLib.deploy()
 
@@ -83,10 +83,10 @@ def test_safe_transfer_eth():
     assert tokenoor.balance == 1000
     assert noeth.balance == 1000
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer():
-    milady = default_chain.accounts[0]
-    default_chain.set_default_accounts(milady)
+    milady = chain.accounts[0]
+    chain.set_default_accounts(milady)
 
     SafeTransferLib.deploy()
 
@@ -113,7 +113,7 @@ def test_safe_transfer():
     assert tokenoor.balanceOfoor(tokenoor, milady) == 2**30 * 2
 
 def safe_transfer_weird(weird: Account):
-    milady = default_chain.accounts[0]
+    milady = chain.accounts[0]
     weird = ERC20Mock(weird)
 
     SafeTransferLib.deploy()
@@ -145,47 +145,47 @@ def safe_transfer_weird(weird: Account):
     assert tokenoor.balanceOfoor(milady, milady) == 0
     assert tokenoor.balanceOfoor(weird, milady) == 2**30 * 2
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_1():
     weird = ApprovalRaceToken.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_2():
     weird = ApprovalToZeroToken.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_3():
     weird = BlockableToken.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_4():
     weird = HighDecimalToken.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_5():
     weird = Bytes32MetadataToken.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_6():
     weird = MissingReturnToken.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_7():
     weird = NoRevertToken.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_8():
     weird = PausableToken.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_9():
     impl = ProxiedToken.deploy(0)
     weird_proxy = TokenProxy.deploy(impl)
@@ -193,33 +193,33 @@ def test_safe_transfer_weird_9():
     weird.setDelegator(weird_proxy, True)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_10():
     weird = ReturnsFalseToken.deploy(0)
     with must_revert():
         safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_11():
     weird = ReentrantToken.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_12():
     weird = TransferFeeToken.deploy(0,0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_13():
     weird = Uint96ERC20.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_safe_transfer_weird_14():
     weird = UpgradableToken.deploy(0)
     safe_transfer_weird(weird)
 
-@default_chain.connect()
+@chain.connect()
 def test_mint_to_zero_address():
     tokenoor = ERC20Mock.deploy("Mockoor", "MOCK", 18)
     tokenoor.mint(Address(0), 2**256-1)
