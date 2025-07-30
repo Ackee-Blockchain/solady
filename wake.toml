@@ -15,4 +15,8 @@ ignore_paths = ["venv", ".venv", "test"]
 exclude_paths = ["node_modules", "lib", "script"]
 
 [testing]
-cmd = "revm"
+cmd = "anvil"
+
+[testing.anvil]
+cmd_args = "--prune-history 100 --transaction-block-keeper 10 --steps-tracing --silent"
+

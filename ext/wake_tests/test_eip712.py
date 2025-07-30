@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+from eth_account._utils.structured_data.hashing import hash_message
 from wake.testing import *  # pyright: ignore reportMissingImports
 
 from pytypes.src.utils.ERC1967Factory import ERC1967Factory
@@ -8,13 +9,13 @@ from pytypes.ext.wake_tests.helpers.EIP712Mock import EIP712Mock
 
 
 @dataclass
-class Person(Struct):
+class Person:
     name: str
     wallet: Address
 
 
 @dataclass
-class Mail(Struct):
+class Mail:
     from_: Person = field(metadata={"original_name": "from"})
     to: Person
     contents: str
@@ -41,10 +42,7 @@ def test_eip712():
         [],
     )
 
-    mail_hash = keccak256(abi.encode_packed(
-        keccak256(mail.encode_eip712_type().encode()),
-        mail.encode_eip712_data()
-    ))
+    mail_hash = hash_message(signer._prepare_eip712_dict(mail, Eip712Domain(), False))
 
 
     domain = Eip712Domain(
@@ -76,10 +74,7 @@ def test_eip712_proxy():
         [],
     )
 
-    mail_hash = keccak256(abi.encode_packed(
-        keccak256(mail.encode_eip712_type().encode()),
-        mail.encode_eip712_data()
-    ))
+    mail_hash = hash_message(signer._prepare_eip712_dict(mail, Eip712Domain(), False))
 
     sign1 = signer.sign_hash(eip712.hashTypedData(mail_hash))
     sign2 = signer.sign_structured(mail, Eip712Domain(

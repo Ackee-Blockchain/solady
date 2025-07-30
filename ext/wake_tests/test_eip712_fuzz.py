@@ -8,14 +8,17 @@ from pytypes.src.utils.ERC1967Factory import ERC1967Factory
 from pytypes.ext.wake_tests.helpers.EIP712Mock import EIP712Mock
 
 
+from eth_account._utils.structured_data.hashing import hash_message
+
+
 @dataclass
-class Person(Struct):
+class Person:
     name: str
     wallet: Address
 
 
 @dataclass
-class Mail(Struct):
+class Mail:
     from_: Person = field(metadata={"original_name": "from"})
     to: Person
     contents: str
@@ -41,10 +44,7 @@ class Eip712FuzzTest(FuzzTest):
     @flow()
     def sign_flow(self, mail: Mail) -> None:
 
-        mail_hash = keccak256(abi.encode_packed(
-            keccak256(mail.encode_eip712_type().encode()),
-            mail.encode_eip712_data()
-        ))
+        mail_hash = hash_message(self._signer._prepare_eip712_dict(mail, Eip712Domain(), False))
 
         sign1 = self._signer.sign_hash(self._eip712.hashTypedData(mail_hash))
         sign2 = self._signer.sign_structured(mail, Eip712Domain(
