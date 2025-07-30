@@ -1,12 +1,10 @@
-from typing import List, Tuple
-
 from wake.testing import keccak256
 
 
 class MerkleTree:
     _is_ready: bool
-    _leaves: List[bytes]
-    _levels: List[List[bytes]]
+    _leaves: list[bytes]
+    _levels: list[list[bytes]]
 
     def __init__(self):
         self._is_ready = False
@@ -20,10 +18,10 @@ class MerkleTree:
         return self._levels[-1][0]
 
     @property
-    def values(self) -> Tuple[bytes, ...]:
+    def values(self) -> tuple[bytes, ...]:
         return tuple(self._leaves)
 
-    def get_proof(self, index: int) -> List[bytes]:
+    def get_proof(self, index: int) -> list[bytes]:
         if not self._is_ready:
             self._build_tree()
 
@@ -36,7 +34,7 @@ class MerkleTree:
             index //= 2
         return proof
 
-    def get_multiproof(self, indexes: List[int]) -> Tuple[List[bytes], List[bool]]:
+    def get_multiproof(self, indexes: list[int]) -> tuple[list[bytes], list[bool]]:
         if not self._is_ready:
             self._build_tree()
 
@@ -79,7 +77,7 @@ class MerkleTree:
             self._levels.append(self._build_level(self._levels[-1]))
         self._is_ready = True
 
-    def _build_level(self, level: List[bytes]) -> List[bytes]:
+    def _build_level(self, level: list[bytes]) -> list[bytes]:
         if len(level) % 2 == 1:
             level.append(level[-1])
         return [

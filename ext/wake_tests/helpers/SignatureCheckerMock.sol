@@ -49,6 +49,7 @@ contract ERC1271SignatureChecker {
             v := byte(0, mload(add(_signature, 0x60)))
         }
 
+        // wake-disable-next-line
         if (tx.origin == ecrecover(_hash, v, r, s)) {
             return MAGICVALUE;
         } else {

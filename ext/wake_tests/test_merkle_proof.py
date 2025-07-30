@@ -1,13 +1,12 @@
-import random
-
-from wake.testing import *
+from wake.testing import * # pyright: ignore reportMissingImports
 from wake.testing.fuzzing import random_bytes, random_int
-from pytypes.tests.MerkleProofMock import MerkleProofMock
+
+from pytypes.ext.wake_tests.helpers.MerkleProofMock import MerkleProofMock
 
 from .utils import MerkleTree
 
 
-@default_chain.connect()
+@chain.connect()
 def test_merkle_proof():
     tree = MerkleTree()
     for _ in range(100):
@@ -20,7 +19,7 @@ def test_merkle_proof():
         assert merkle_proof_mock.verifyCalldata(tree.get_proof(i), tree.root, keccak256(tree.values[i]))
 
 
-@default_chain.connect()
+@chain.connect()
 def test_merkle_multiproof_single():
     tree = MerkleTree()
     tree.add_leaf(random_bytes(0, 1_000))
@@ -33,9 +32,9 @@ def test_merkle_multiproof_single():
     assert merkle_proof_mock.verifyMultiProofCalldata([keccak256(tree.values[0])], tree.root, [], [])
 
 
-@default_chain.connect()
+@chain.connect()
 def test_merkle_multiproof():
-    default_chain.set_default_accounts(default_chain.accounts[0])
+    chain.set_default_accounts(chain.accounts[0])
 
     tree = MerkleTree()
     for _ in range(1_000):

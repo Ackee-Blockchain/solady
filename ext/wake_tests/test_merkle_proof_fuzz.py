@@ -1,8 +1,7 @@
-import random
+from wake.testing import * # pyright: ignore reportMissingImports
+from wake.testing.fuzzing import * # pyright: ignore reportMissingImports
 
-from wake.testing import *
-from wake.testing.fuzzing import *
-from pytypes.tests.MerkleProofMock import MerkleProofMock
+from pytypes.ext.wake_tests.helpers.MerkleProofMock import MerkleProofMock
 
 from .utils import MerkleTree
 
@@ -118,6 +117,6 @@ class MerkleProofFuzzTest(FuzzTest):
         assert not self._merkle_proof.verifyMultiProofCalldata(proof, root, leaf_hashes, flags)
 
 
-@default_chain.connect()
+@chain.connect()
 def test_merkle_proof_fuzz():
     MerkleProofFuzzTest().run(10, 100)
